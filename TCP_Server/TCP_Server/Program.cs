@@ -10,7 +10,7 @@ namespace TCP_Server
 {
     class Program
     {
-        static int port = 8080;
+        static int port = 8080;//lalala
         static void Main(string[] args)
         {
             IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
