@@ -1,0 +1,7 @@
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\bin\Debug\TCP_Client.exe.config
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\bin\Debug\TCP_Client.exe
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\bin\Debug\TCP_Client.pdb
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\obj\Debug\TCP_Client.csprojAssemblyReference.cache
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\obj\Debug\TCP_Client.csproj.CoreCompileInputs.cache
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\obj\Debug\TCP_Client.exe
+D:\4 sem\KSIS\2 lab\TCP\C#\TCP_Client\TCP_Client\TCP_Client\obj\Debug\TCP_Client.pdb
