@@ -10,49 +10,40 @@ namespace TCP_Server
 {
     class Program
     {
-        static int port = 8080;//lalala
+        static int port = 8080;
+        static string ReadCommand()
+        {
+            Console.Write("$ ");
+            return Console.ReadLine().ToLower();
+        }
         static void Main(string[] args)
         {
-            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
-            Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            try
+            TcpChatServer server = new TcpChatServer(new IPEndPoint(IPAddress.Parse("127.0.0.1"), port));
+
+            string command;
+            while ((command = ReadCommand()) != "exit")
             {
-                StringBuilder builder = new StringBuilder();
-
-                listenSocket.Bind(ipPoint);
-
-                listenSocket.Listen(10);
-
-                Console.WriteLine("Server is on. Waiting for a connection");
-
-                for (int i = 0; i < 10; i++)
+                switch (command)
                 {
-                    Socket handler = listenSocket.Accept();
-                    int bytes = 0;
-                    byte[] data = new byte[256];
-                    builder.Clear();
-                    do
-                    {
-                        bytes = handler.Receive(data);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    } while (handler.Available > 0);
+                    case "start":
+                        server.Start();
+                        server.AcceptClientsAsync();
+                        Console.WriteLine("Listening connections on port {1}", port);
+                        break;
 
-                    Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+                    case "stop":
+                        Console.WriteLine("Stopping listener.");
+                        server.Stop();
+                        break;
 
-                    data = Encoding.Unicode.GetBytes("Your message is delivered.");
-                    handler.Send(data);
-
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
+                    case "exit":
+                        Console.WriteLine("Stopping listener.");
+                        server.Stop();
+                        server.CloseClientsAsync();
+                        break;
+                    
+                    
                 }
-
-                Console.WriteLine("Socket is closed.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadLine();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
         }
     }
