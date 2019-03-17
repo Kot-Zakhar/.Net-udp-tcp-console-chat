@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Net;
+using System.Threading;
 using System.Net.Sockets;
 
 namespace TCP_Server
@@ -12,25 +9,27 @@ namespace TCP_Server
     {
         public string name;
         public Guid id;
+        public Thread connectionThread;
         private NetworkStream stream;
         private TcpClient client;
         private TcpChatServer server;
+
 
         public TcpChatClient(TcpClient tcpClient, TcpChatServer tcpServer)
         {
             this.id = Guid.NewGuid();
             this.client = tcpClient;
             this.stream = client.GetStream();
-            this.name = GetMessage();
             this.server = tcpServer;
+
+            this.connectionThread = new Thread(new ThreadStart(this.Process));
+            this.connectionThread.Start();
         }
 
-        public async void SendNotification(TcpChatClient sender, string message)
+        public async void SendMessageAsync(string message)
         {
-            if (this != sender)
-            {
-
-            }
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            await this.stream.WriteAsync(data, 0, data.Length);
         }
 
         private string GetMessage()
@@ -48,9 +47,46 @@ namespace TCP_Server
             return builder.ToString();
         }
 
-        public async void ReceiveMessagesAsync()
+        public void Process()
         {
+            this.name = GetMessage();
+            string message = this.name + " is connected.";
+            server.BroadcastMessage(message, this.id);
+            Console.WriteLine(message);
+
+            try
+            {
+                while (true)
+                {
+                    message = GetMessage();
+                    message = String.Format("{0}: {1}", this.name, message);
+                    Console.WriteLine(message);
+                    server.BroadcastMessage(message, this.id);
+                }
+            }
+            catch
+            {
+                message = String.Format("{0} left the chat.", this.name);
+                Console.WriteLine(message);
+                server.BroadcastMessage(message, this.id);
+            }
+            finally
+            {
+                server.RemoveConnection(this.id);
+                this.Close();
+            }
 
         }
+
+        public void Close()
+        {
+            if (stream != null)
+                stream.Close();
+            if (client != null)
+                client.Close();
+            if (connectionThread.IsAlive)
+                connectionThread.Abort();
+        }
+
     }
 }
