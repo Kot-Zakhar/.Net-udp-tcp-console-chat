@@ -1,0 +1,7 @@
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\bin\Debug\UDP_Client.exe.config
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\bin\Debug\UDP_Client.exe
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\bin\Debug\UDP_Client.pdb
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\obj\Debug\UDP_Client.csprojAssemblyReference.cache
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\obj\Debug\UDP_Client.csproj.CoreCompileInputs.cache
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\obj\Debug\UDP_Client.exe
+D:\4 sem\KSIS\2 lab\UDP_Client\UDP_Client\obj\Debug\UDP_Client.pdb
