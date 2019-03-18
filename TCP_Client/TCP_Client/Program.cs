@@ -10,45 +10,28 @@ namespace TCP_Client
 {
     class Program
     {
-        static int port = 8080;
-        static string serverAddress = "127.0.0.1";
+        static public int port = 8080;
+        static public string serverAddress = "127.0.0.1";
         static void Main(string[] args)
         {
+            Console.Write("Insert your name: ");
+            string name;
+            while ((name = Console.ReadLine()) == "") ;
+            TcpChatClient client = new TcpChatClient(name);
             try
             {
-                IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(serverAddress), port);
-
-                Socket connectionSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                connectionSocket.Connect(ipPoint);
-                Console.Write("Insert a message here:");
-                string message = Console.ReadLine();
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                connectionSocket.Send(data);
-
-                data = new byte[256];
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0;
-                do
-                {
-                    bytes = connectionSocket.Receive(data);
-                    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                }
-                while (connectionSocket.Available > 0);
-                Console.WriteLine("Response: " + builder.ToString());
-
-                connectionSocket.Shutdown(SocketShutdown.Both);
-                connectionSocket.Close();
-
-                Console.WriteLine("Socket is closed.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadLine();
-
+                while (true)
+                    client.SendMessageAsync(Console.ReadLine());
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Connection has been interrupted. Exception: {0}", ex.Message);
             }
+            finally
+            {
+                client.Disconnect();
+            }
+            
         }
     }
 }

@@ -1,58 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net;
-using System.Net.Sockets;
 
 namespace TCP_Server
 {
     class Program
     {
         static int port = 8080;
+
+        static string ReadCommand()
+        {
+            //Console.Write("$ ");
+            return Console.ReadLine().ToLower();
+        }
+
         static void Main(string[] args)
         {
-            IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
-            Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            TcpChatServer server = new TcpChatServer(new IPEndPoint(IPAddress.Parse("127.0.0.1"), port));
+            Thread listenThread = new Thread(new ThreadStart(server.Listen));
+
+            string command;
             try
             {
-                StringBuilder builder = new StringBuilder();
-
-                listenSocket.Bind(ipPoint);
-
-                listenSocket.Listen(10);
-
-                Console.WriteLine("Server is on. Waiting for a connection");
-
-                for (int i = 0; i < 10; i++)
+                server.Start(); // server starts listening the connections on $port
+                listenThread.Start();
+                Console.WriteLine("Listening connections on port {0}", port);
+                while ((command = ReadCommand()) != "exit")
                 {
-                    Socket handler = listenSocket.Accept();
-                    int bytes = 0;
-                    byte[] data = new byte[256];
-                    builder.Clear();
-                    do
+                    switch (command)
                     {
-                        bytes = handler.Receive(data);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    } while (handler.Available > 0);
+                        //case "start":
+                        //    server.Start(); // server starts listening the connections on $port
+                        //    listenThread.Start();
+                        //    //server.AcceptClientsAsync();
+                        //    Console.WriteLine("Listening connections on port {0}", port);
+                        //    break;
 
-                    Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+                        case "stop":
+                            Console.WriteLine("Stopping listener.");
+                            server.Stop();
+                            if (listenThread.IsAlive)
+                                listenThread.Abort();// if all connections are crushing, means that all child threads are aborted too
+                            break;
 
-                    data = Encoding.Unicode.GetBytes("Your message is delivered.");
-                    handler.Send(data);
-
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
+                        default:
+                            Console.WriteLine("Unknown command.");
+                            break;
+                    }
                 }
-
-                Console.WriteLine("Socket is closed.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadLine();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Server has been stopped. Exception: {0}", ex.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Stopping listener.");
+                server.Disconnect();
+                if (listenThread.IsAlive)
+                    listenThread.Abort();
             }
         }
     }
