@@ -10,7 +10,7 @@ namespace TCP_Server
 
         static string ReadCommand()
         {
-            Console.Write("$ ");
+            //Console.Write("$ ");
             return Console.ReadLine().ToLower();
         }
 
@@ -22,22 +22,30 @@ namespace TCP_Server
             string command;
             try
             {
+                server.Start(); // server starts listening the connections on $port
+                listenThread.Start();
+                Console.WriteLine("Listening connections on port {0}", port);
                 while ((command = ReadCommand()) != "exit")
                 {
                     switch (command)
                     {
-                        case "start":
-                            server.Start(); // server starts listening the connections on $port
-                            listenThread.Start();
-                            //server.AcceptClientsAsync();
-                            Console.WriteLine("Listening connections on port {0}", port);
-                            break;
+                        //case "start":
+                        //    server.Start(); // server starts listening the connections on $port
+                        //    listenThread.Start();
+                        //    //server.AcceptClientsAsync();
+                        //    Console.WriteLine("Listening connections on port {0}", port);
+                        //    break;
 
                         case "stop":
                             Console.WriteLine("Stopping listener.");
                             server.Stop();
-                            listenThread.Abort();// if all connections are crushing, means that all child threads are aborted too
-                            break;                                      
+                            if (listenThread.IsAlive)
+                                listenThread.Abort();// if all connections are crushing, means that all child threads are aborted too
+                            break;
+
+                        default:
+                            Console.WriteLine("Unknown command.");
+                            break;
                     }
                 }
             }
@@ -49,6 +57,8 @@ namespace TCP_Server
             {
                 Console.WriteLine("Stopping listener.");
                 server.Disconnect();
+                if (listenThread.IsAlive)
+                    listenThread.Abort();
             }
         }
     }

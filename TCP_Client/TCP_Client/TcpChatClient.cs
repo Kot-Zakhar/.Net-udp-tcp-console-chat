@@ -21,7 +21,7 @@ namespace TCP_Client
             client = new TcpClient();
             client.Connect(new IPEndPoint(IPAddress.Parse(Program.serverAddress), Program.port));
             stream = client.GetStream();
-            SendMessage(name);
+            SendMessageAsync(name);
             threadReceive = new Thread(new ThreadStart(this.ReceiveMessage));
             threadReceive.Start();
         }
@@ -54,10 +54,10 @@ namespace TCP_Client
             }
         }
 
-        public void SendMessage(string message)
+        public async void SendMessageAsync(string message)
         {
             byte[] data = Encoding.Unicode.GetBytes(message);
-            stream.Write(data, 0, data.Length);
+            await stream.WriteAsync(data, 0, data.Length);
         }
 
         public void Disconnect()

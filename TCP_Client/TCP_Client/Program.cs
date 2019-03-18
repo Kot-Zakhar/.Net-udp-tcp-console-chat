@@ -15,11 +15,13 @@ namespace TCP_Client
         static void Main(string[] args)
         {
             Console.Write("Insert your name: ");
-            TcpChatClient client = new TcpChatClient(Console.ReadLine());
+            string name;
+            while ((name = Console.ReadLine()) == "") ;
+            TcpChatClient client = new TcpChatClient(name);
             try
             {
                 while (true)
-                    client.SendMessage(Console.ReadLine());
+                    client.SendMessageAsync(Console.ReadLine());
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
+using System.Net;
 
 namespace TCP_Server
 {
@@ -10,6 +11,7 @@ namespace TCP_Server
         public string name;
         public Guid id;
         public Thread connectionThread;
+        public int port { get; private set; }
         private NetworkStream stream;
         private TcpClient client;
         private TcpChatServer server;
@@ -21,6 +23,7 @@ namespace TCP_Server
             this.client = tcpClient;
             this.stream = client.GetStream();
             this.server = tcpServer;
+            this.port = ((IPEndPoint)client.Client.RemoteEndPoint).Port;
 
             this.connectionThread = new Thread(new ThreadStart(this.Process));
             this.connectionThread.Start();
@@ -50,9 +53,9 @@ namespace TCP_Server
         public void Process()
         {
             this.name = GetMessage();
-            string message = this.name + " is connected.";
+            string message = this.name + String.Format(" is connected (port: {0}).", this.port);
             server.BroadcastMessage(message, this.id);
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
 
             try
             {
@@ -60,14 +63,14 @@ namespace TCP_Server
                 {
                     message = GetMessage();
                     message = String.Format("{0}: {1}", this.name, message);
-                    Console.WriteLine(message);
+                    //Console.WriteLine(message);
                     server.BroadcastMessage(message, this.id);
                 }
             }
             catch
             {
                 message = String.Format("{0} left the chat.", this.name);
-                Console.WriteLine(message);
+                //Console.WriteLine(message);
                 server.BroadcastMessage(message, this.id);
             }
             finally

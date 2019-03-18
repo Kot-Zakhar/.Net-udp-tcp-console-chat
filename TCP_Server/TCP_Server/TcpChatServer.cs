@@ -47,6 +47,11 @@ namespace TCP_Server
                 clients.Remove(client);
         }
 
+        public void AddConnection(TcpChatClient newClient)
+        {
+            clients.Add(newClient);
+        }
+
         public void Listen()
         {
             try
@@ -54,6 +59,7 @@ namespace TCP_Server
                 while (true)
                 {
                     TcpChatClient newClient = new TcpChatClient(this.AcceptTcpClient(), this);
+                    this.AddConnection(newClient);
                 }
             }
             catch (Exception ex)
@@ -63,8 +69,9 @@ namespace TCP_Server
             }
         }
 
-        public void BroadcastMessage(string message, Guid senderId)
-        {
+        public async void BroadcastMessage(string message, Guid senderId)
+        { 
+            Console.WriteLine(message);
             foreach (TcpChatClient client in clients)
                 if (senderId != client.id)
                     client.SendMessageAsync(message);
